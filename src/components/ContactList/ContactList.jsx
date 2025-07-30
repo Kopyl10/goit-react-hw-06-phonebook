@@ -1,30 +1,23 @@
-import PropTypes from 'prop-types';
-import css from './ContactList.module.css';
+import { useSelector } from 'react-redux';
 
-export default function ContactList({ contacts, onDelete }) {
+const ContactList = ({ onDelete }) => {
+  const contacts = useSelector(state => state.contacts.items);
+  const filter = useSelector(state => state.filter);
+
+  const filteredContacts = contacts.filter(contact =>
+    contact.name.toLowerCase().includes(filter.toLowerCase())
+  );
+
   return (
-    <ul className={css.list}>
-      {contacts.map(({ id, name, number }) => (
-        <li key={id} className={css.item}>
-          <span>
-            {name}: {number}
-          </span>
-          <button className={css.button} onClick={() => onDelete(id)}>
-            Delete
-          </button>
+    <ul>
+      {filteredContacts.map(({ id, name, phone }) => (
+        <li key={id}>
+          {name}: {phone}
+          <button onClick={() => onDelete(id)}>Delete</button>
         </li>
       ))}
     </ul>
   );
-}
-
-ContactList.propTypes = {
-  contacts: PropTypes.arrayOf(
-    PropTypes.exact({
-      id: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired,
-      number: PropTypes.string.isRequired,
-    })
-  ).isRequired,
-  onDelete: PropTypes.func.isRequired,
 };
+
+export default ContactList;

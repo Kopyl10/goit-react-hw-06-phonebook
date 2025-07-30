@@ -1,17 +1,20 @@
-import { useSelector, useDispatch } from 'react-redux';
-import { deleteContact } from './redux/contactsSlice';
-import ContactForm from './components/ContactForm/ContactForm';
-import Filter from './components/Filter/Filter';
-import ContactList from './components/ContactList/ContactList';
+import { useDispatch } from 'react-redux';
+import { useEffect } from 'react';
+import { fetchContacts, deleteContact } from '../redux/contactsSlice';
+import ContactForm from './ContactForm/ContactForm';
+import Filter from './Filter/Filter';
+import ContactList from './ContactList/ContactList';
 
 export const App = () => {
-  const contacts = useSelector(state => state.contacts);
-  const filter = useSelector(state => state.filter);
   const dispatch = useDispatch();
 
-  const filteredContacts = contacts.filter(contact =>
-    contact.name.toLowerCase().includes(filter.toLowerCase())
-  );
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
+
+  const handleDelete = id => {
+    dispatch(deleteContact(id));
+  };
 
   return (
     <div style={{ padding: 40 }}>
@@ -20,10 +23,7 @@ export const App = () => {
 
       <h2>Contacts</h2>
       <Filter />
-      <ContactList
-        contacts={filteredContacts}
-        onDelete={id => dispatch(deleteContact(id))}
-      />
+      <ContactList onDelete={handleDelete} />
     </div>
   );
 };
